@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lawrence's 18th Gathering</title>
+  <!-- React & ReactDOM CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <!-- Babel standalone for JSX compiling in browser -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://unpkg.com/lucide-react@latest/dist/umd/lucide-react.js"></script>
+</head>
+<body class="bg-[#09090b]">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+    
+    // Fallback Icon Components using Lucide CDN or inline SVG helpers
+    const Icon = ({ name, size = 16, className = "" }) => {
+      const LucideIcon = window['lucide-react'] ? window['lucide-react'][name] : null;
+      if (LucideIcon) return <LucideIcon size={size} className={className} />;
+      return null;
+    };
+
+    // Paste your App component here below (without `export default`, without `import` statements at top)
+  </script>
+</body>
+</html>
