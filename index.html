@@ -218,9 +218,9 @@
 
       const sendRsvpToGoogleSheet = async (name, status) => {
         // REPLACE THIS URL with your deployed Google Apps Script Web App URL if using Google Sheets tracking
-        const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxacWoR0wQ-OYRyhjx7fFbHBZK8UxpFWuL-8KazDLG7ra-esBW2cucwGh0AawSJSU4/exec';
         
-        if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
+        if (GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbxacWoR0wQ-OYRyhjx7fFbHBZK8UxpFWuL-8KazDLG7ra-esBW2cucwGh0AawSJSU4/exec') return;
 
         try {
           await fetch(GOOGLE_SCRIPT_URL, {
