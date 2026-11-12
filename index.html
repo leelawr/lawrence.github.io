@@ -116,6 +116,24 @@
       User: () => <svg className="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
     };
 
+    function pickBalancedMission(name) {
+      let hash = 0;
+      const clean = (name || '').trim().toLowerCase();
+      for (let i = 0; i < clean.length; i++) {
+        hash = (hash * 31 + clean.charCodeAt(i)) >>> 0;
+      }
+      let salt = 0;
+      if (window.crypto && window.crypto.getRandomValues) {
+        const arr = new Uint32Array(1);
+        window.crypto.getRandomValues(arr);
+        salt = arr[0];
+      } else {
+        salt = Math.floor(Math.random() * 100000);
+      }
+      const index = (hash + salt) % SECRET_MISSIONS.length;
+      return SECRET_MISSIONS[index];
+    }
+
     function App() {
       const [screen, setScreen] = useState(1);
       const [guestName, setGuestName] = useState('');
@@ -130,9 +148,14 @@
       const canvasRef = useRef(null);
 
       useEffect(() => {
-        const saved = localStorage.getItem('lawrence_bday_mission_2026');
-        if (saved) {
-          setSecretMission(saved);
+        const savedMission = localStorage.getItem('lawrence_bday_mission_2026');
+        if (savedMission) {
+          setSecretMission(savedMission);
+        }
+        const savedName = localStorage.getItem('lawrence_bday_guest_2026');
+        if (savedName) {
+          setGuestName(savedName);
+          setScreen(3);
         }
       }, []);
 
@@ -216,18 +239,22 @@
         });
       };
 
-      const sendRsvpToGoogleSheet = async (name, status) => {
-        // REPLACE THIS URL with your deployed Google Apps Script Web App URL if using Google Sheets tracking
+      const sendRsvpToGoogleSheet = async (name, status, mission) => {
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxacWoR0wQ-OYRyhjx7fFbHBZK8UxpFWuL-8KazDLG7ra-esBW2cucwGh0AawSJSU4/exec';
         
-        if (GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbxacWoR0wQ-OYRyhjx7fFbHBZK8UxpFWuL-8KazDLG7ra-esBW2cucwGh0AawSJSU4/exec') return;
+        if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
 
         try {
           await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, status, timestamp: new Date().toISOString() })
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+              name,
+              status,
+              mission: mission || 'Not opened yet',
+              timestamp: new Date().toISOString()
+            })
           });
         } catch (e) {
           console.error("RSVP Log failed:", e);
@@ -240,9 +267,19 @@
           triggerSound('pop');
           return;
         }
+        const cleanName = guestName.trim();
         setNameError(false);
         triggerSound('chime');
-        sendRsvpToGoogleSheet(guestName.trim(), 'ATTENDING');
+
+        let assigned = localStorage.getItem('lawrence_bday_mission_2026');
+        if (!assigned) {
+          assigned = pickBalancedMission(cleanName);
+          localStorage.setItem('lawrence_bday_mission_2026', assigned);
+          setSecretMission(assigned);
+        }
+        localStorage.setItem('lawrence_bday_guest_2026', cleanName);
+
+        sendRsvpToGoogleSheet(cleanName, 'ATTENDING', assigned);
         setScreen(3);
       };
 
@@ -252,8 +289,7 @@
           setShowMissionModal(true);
           return;
         }
-        const randomIndex = Math.floor(Math.random() * SECRET_MISSIONS.length);
-        const assigned = SECRET_MISSIONS[randomIndex];
+        const assigned = pickBalancedMission(guestName);
         localStorage.setItem('lawrence_bday_mission_2026', assigned);
         setSecretMission(assigned);
         setShowMissionModal(true);
@@ -648,6 +684,7 @@
         </div>
       );
     }
+
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
   </script>
