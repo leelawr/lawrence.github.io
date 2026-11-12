@@ -381,7 +381,7 @@
                   <div className="space-y-1.5">
                     <label className="text-[11px] font-mono text-zinc-400 uppercase flex items-center space-x-1.5">
                       <Icons.User />
-                      <span>YOUR NAME / NICKNAME <span className="text-amber-400">*</span></span>
+                      <span>YOUR NAME <span className="text-amber-400">*</span></span>
                     </label>
                     <input
                       type="text"
@@ -390,7 +390,7 @@
                         setGuestName(e.target.value);
                         if (e.target.value.trim()) setNameError(false);
                       }}
-                      placeholder="e.g. Alex"
+                      placeholder="e.g. Tiger"
                       className={`w-full px-4 py-3 rounded-xl bg-zinc-900 border text-white text-xs focus:outline-none transition ${
                         nameError 
                           ? 'border-red-500 focus:border-red-500 placeholder-red-400/60' 
